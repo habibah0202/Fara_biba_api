@@ -1,3 +1,6 @@
 RewriteEngine On
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteRule ^ index.php [QSA,L]
+
+# Pastikan /api/* selalu masuk ke index.php
+RewriteRule ^api/.*$ index.php [QSA,L]
