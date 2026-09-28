@@ -1,6 +1,9 @@
 <?php
 
 header('Content-Type: application/json; charset=utf-8');
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: GET, POST, PUT, PATCH, DELETE, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
 
 const FILE_DATA = __DIR__ . '/data/nilai.json';
 
@@ -36,8 +39,42 @@ function tentukanKeterangan(float $nilai): string
     return $nilai >= 60 ? 'Lulus' : 'Tidak Lulus';
 }
 
+function ambilInput(): array
+{
+    $raw = file_get_contents('php://input');
+
+    if ($raw === false || $raw === '') {
+        return is_array($_POST) ? $_POST : [];
+    }
+
+    $decoded = json_decode($raw, true);
+    if (is_array($decoded)) {
+        return $decoded;
+    }
+
+    parse_str($raw, $data);
+
+    return is_array($data) ? $data : [];
+}
+
+function normalisasiPath(): string
+{
+    $path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?? '/';
+
+    if ($path === '') {
+        return '/';
+    }
+
+    return rtrim($path, '/');
+}
+
 $method = $_SERVER['REQUEST_METHOD'];
-$path = rtrim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/');
+$path = normalisasiPath();
+
+if ($method === 'OPTIONS') {
+    http_response_code(204);
+    exit;
+}
 
 /*
 |--------------------------------------------------------------------------
@@ -62,12 +99,12 @@ if ($method === 'GET' && preg_match('#/api/nilai$#', $path)) {
 */
 if ($method === 'POST' && preg_match('#/api/nilai$#', $path)) {
 
-    $input = json_decode(file_get_contents('php://input'), true);
+    $input = ambilInput();
 
     if (!is_array($input)) {
         kirim(400, [
             'status' => 'error',
-            'pesan' => 'Body harus berupa JSON yang valid'
+            'pesan' => 'Body harus berupa JSON atau form-data yang valid'
         ]);
     }
 
@@ -152,12 +189,12 @@ if (
         ]);
     }
 
-    $input = json_decode(file_get_contents('php://input'), true);
+    $input = ambilInput();
 
     if (!is_array($input)) {
         kirim(400, [
             'status' => 'error',
-            'pesan' => 'Body harus berupa JSON yang valid'
+            'pesan' => 'Body harus berupa JSON atau form-data yang valid'
         ]);
     }
 
