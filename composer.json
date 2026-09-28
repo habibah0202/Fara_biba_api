@@ -1,0 +1,8 @@
+{
+    "name": "habibah0202/fara-biba-api",
+    "description": "REST API Nilai PHP Native",
+    "type": "project",
+    "require": {
+        "php": "^8.1"
+    }
+}
