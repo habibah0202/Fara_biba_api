@@ -5,7 +5,7 @@ header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST, PUT, PATCH, DELETE, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
 
-const FILE_DATA = __DIR__ . '/data/nilai.json';
+const FILE_DATA = __DIR__ . '/storage/app/nilai.json';
 
 function kirim(int $status, array $body): void
 {
